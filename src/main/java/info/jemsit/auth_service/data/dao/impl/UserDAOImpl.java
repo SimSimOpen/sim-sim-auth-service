@@ -35,4 +35,11 @@ public class UserDAOImpl implements UserDAO {
         log.info("Updating user: {}", user.getUsername());
         return userRepository.saveAndFlush(user);
     }
+
+    @Override
+    public Optional<User> findByUsernameOrEmail(String username, String email) {
+
+        log.info("Finding user by username: {} or email:{}", username, email);
+        return userRepository.findByUsernameOrEmail(username, email);
+    }
 }

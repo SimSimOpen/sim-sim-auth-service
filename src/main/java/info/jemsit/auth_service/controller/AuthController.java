@@ -3,6 +3,7 @@ package info.jemsit.auth_service.controller;
 import info.jemsit.auth_service.service.AuthService;
 import info.jemsit.common.dto.request.AuthenticationRequestDTO;
 import info.jemsit.common.dto.request.RegisterRequestDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,13 +24,13 @@ public class AuthController {
     }
 
     @PostMapping("register/client")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
         authService.registerClient(request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("register/agent")
-    public ResponseEntity<?> registerAgent(@RequestBody RegisterRequestDTO request) {
+    public ResponseEntity<?> registerAgent(@Valid @RequestBody RegisterRequestDTO request) {
         authService.registerAgent(request);
         return ResponseEntity.ok().build();
     }

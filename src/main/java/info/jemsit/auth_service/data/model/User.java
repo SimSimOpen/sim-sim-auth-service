@@ -35,6 +35,9 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Token> tokens = new ArrayList<>();
 
+    @Column(name = "profile_id")
+    private Long profileId;
+
     public void addToken(Token token) {
         tokens.add(token);
         token.setUser(this);

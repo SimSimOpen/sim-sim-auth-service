@@ -9,4 +9,6 @@ public interface UserDAO {
     User save(User user);
 
     User update(User user);
+
+    Optional<User> findByUsernameOrEmail(String username, String email);
 }

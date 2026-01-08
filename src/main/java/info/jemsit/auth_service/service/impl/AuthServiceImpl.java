@@ -51,9 +51,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void registerClient(RegisterRequestDTO request) {
+        var userExists = userDAO.findByUsernameOrEmail(request.username(), request.email());
+        if (userExists.isPresent()) {
+            throw new UserException("User with given username or email already exists");
+        }
         User newUser = new User();
         newUser.setUsername(request.username());
         newUser.setPassword(passwordEncoder.encode(request.password()));
+        newUser.setEmail(request.email());
         newUser.setAuthorities(List.of(Roles.CLIENT));
         userDAO.save(newUser);
     }
