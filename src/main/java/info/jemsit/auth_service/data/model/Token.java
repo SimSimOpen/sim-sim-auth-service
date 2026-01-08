@@ -1,8 +1,6 @@
 package info.jemsit.auth_service.data.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +12,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TokenEntity extends BaseEntity {
+public class Token extends BaseEntity {
     @Column(name = "token", unique = true)
     private String token;
     @Column(name = "refresh_token", unique = true)
     private String refreshToken;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
