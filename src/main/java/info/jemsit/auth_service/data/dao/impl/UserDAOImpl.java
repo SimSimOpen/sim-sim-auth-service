@@ -2,7 +2,9 @@ package info.jemsit.auth_service.data.dao.impl;
 
 import info.jemsit.auth_service.data.dao.UserDAO;
 import info.jemsit.auth_service.data.model.User;
+import info.jemsit.auth_service.data.repository.TokenRepository;
 import info.jemsit.auth_service.data.repository.UserRepository;
+import info.jemsit.common.exceptions.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.Optional;
 public class UserDAOImpl implements UserDAO {
 
     private final UserRepository userRepository;
+
+    private final TokenRepository tokenRepository;
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -41,5 +45,12 @@ public class UserDAOImpl implements UserDAO {
 
         log.info("Finding user by username: {} or email:{}", username, email);
         return userRepository.findByUsernameOrEmail(username, email);
+    }
+
+    @Override
+    public Optional<User> findByToken(String token) {
+        log.info("Finding user by token: {}", token);
+        var result  = tokenRepository.findByToken(token).orElseThrow(()->new UserException("Token not found"));
+        return Optional.ofNullable(result.getUser());
     }
 }

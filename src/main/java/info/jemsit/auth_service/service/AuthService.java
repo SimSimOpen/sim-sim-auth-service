@@ -1,8 +1,8 @@
 package info.jemsit.auth_service.service;
 
-import info.jemsit.common.dto.request.AuthenticationRequestDTO;
-import info.jemsit.common.dto.request.AuthenticationResponseDTO;
-import info.jemsit.common.dto.request.RegisterRequestDTO;
+import info.jemsit.common.dto.request.auth.AuthenticationRequestDTO;
+import info.jemsit.common.dto.request.auth.RegisterRequestDTO;
+import info.jemsit.common.dto.response.auth.AuthenticationResponseDTO;
 
 public interface AuthService {
     AuthenticationResponseDTO authenticate(AuthenticationRequestDTO requestDTO);

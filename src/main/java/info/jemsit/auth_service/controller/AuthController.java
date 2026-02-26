@@ -1,8 +1,8 @@
 package info.jemsit.auth_service.controller;
 
 import info.jemsit.auth_service.service.AuthService;
-import info.jemsit.common.dto.request.AuthenticationRequestDTO;
-import info.jemsit.common.dto.request.RegisterRequestDTO;
+import info.jemsit.common.dto.request.auth.AuthenticationRequestDTO;
+import info.jemsit.common.dto.request.auth.RegisterRequestDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
