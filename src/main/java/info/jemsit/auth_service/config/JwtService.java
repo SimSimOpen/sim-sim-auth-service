@@ -73,14 +73,6 @@ public class JwtService {
                 .collect(Collectors.toList());
     }
 
-//    public String generateTokenWithNOTime(User user) {
-//        Map<String, Object> claims = new HashMap<>();
-//        Set<String> userRoles = new HashSet<>();
-//        user.getAuthorities().forEach(u -> userRoles.add(u.getAuthority()));
-//        claims.put("roles", userRoles);
-//        return generateTokenWithNOExpireTime(claims, user);
-//    }
-
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         Set<String> userRoles = new HashSet<>();
@@ -94,19 +86,10 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .claims(extraClaims)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 12)) // 12 hours
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30 min
                 .signWith(getSecretKey(), Jwts.SIG.HS256)
                 .compact();
     }
-
-//    public String generateTokenWithNOExpireTime(Map<String, Object> extraClaims, UserDetails userDetails) {
-//        return Jwts.builder()
-//                .subject(userDetails.getUsername())
-//                .claims(extraClaims)
-//                .issuedAt(new Date(System.currentTimeMillis()))
-//                .signWith(getSecretKey(), Jwts.SIG.HS256)
-//                .compact();
-//    }
 
     public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
