@@ -10,4 +10,6 @@ public interface AuthService {
     void registerClient(RegisterRequestDTO request);
 
     void registerAgent(RegisterRequestDTO request);
+
+    void registerAdmin(RegisterRequestDTO request);
 }
