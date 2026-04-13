@@ -12,4 +12,6 @@ public interface AuthService {
     void registerAgent(RegisterRequestDTO request);
 
     void registerAdmin(RegisterRequestDTO request);
+
+    AuthenticationResponseDTO authenticateWithOtp(AuthenticationRequestDTO request);
 }

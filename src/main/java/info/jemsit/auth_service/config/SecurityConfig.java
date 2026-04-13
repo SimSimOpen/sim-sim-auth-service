@@ -25,7 +25,7 @@ public class SecurityConfig {
                .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v1/authenticate", "/v1/register/**").permitAll()
+                        .requestMatchers("/v1/authenticate", "/v1/authenticate/with-otp", "/v1/register/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

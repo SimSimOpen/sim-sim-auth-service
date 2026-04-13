@@ -34,16 +34,11 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO requestDTO) {
-        var user = userDAO.findByUsername(requestDTO.username()).orElseThrow(()->new UsernameNotFoundException("User not found with username: " + requestDTO.username()));
-        if(!passwordEncoder.matches(requestDTO.password(), user.getPassword())){
+        var user = userDAO.findByUsername(requestDTO.username()).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + requestDTO.username()));
+        if (!passwordEncoder.matches(requestDTO.password(), user.getPassword())) {
             throw new UserException("Password is incorrect");
         }
-        var token = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        Token tokenModel = new Token();
-        tokenModel.setToken(token);
-        tokenModel.setRefreshToken(refreshToken);
-        tokenModel.setUser(user);
+        var tokenModel = crateTokenModel(user);
         user.addToken(tokenModel);
         user.setUpdatedAt(LocalDateTime.now());
         return authMapper.toDTO(userDAO.update(user), tokenModel);
@@ -83,5 +78,35 @@ public class AuthServiceImpl implements AuthService {
         userDAO.save(newUser);
     }
 
+
+    @Override
+    public AuthenticationResponseDTO authenticateWithOtp(AuthenticationRequestDTO requestDTO) {
+        var user = userDAO.findByUsername(requestDTO.username());
+        if (user.isEmpty()) {
+            User newUser = new User();
+            newUser.setUsername(requestDTO.username());
+            newUser.setAuthorities(List.of(Roles.CLIENT));
+            var savedUser = userDAO.save(newUser);
+            var tokenModel = crateTokenModel(savedUser);
+            savedUser.addToken(tokenModel);
+            savedUser.setUpdatedAt(LocalDateTime.now());
+            return authMapper.toDTO(userDAO.update(savedUser), tokenModel);
+        } else {
+            var tokenModel = crateTokenModel(user.get());
+            user.get().addToken(tokenModel);
+            user.get().setUpdatedAt(LocalDateTime.now());
+            return authMapper.toDTO(userDAO.update(user.get()), tokenModel);
+        }
+    }
+
+    private Token crateTokenModel(User user) {
+        var token = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        Token tokenModel = new Token();
+        tokenModel.setToken(token);
+        tokenModel.setRefreshToken(refreshToken);
+        tokenModel.setUser(user);
+        return tokenModel;
+    }
 
 }
