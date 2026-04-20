@@ -4,6 +4,7 @@ import info.jemsit.auth_service.data.model.Token;
 import info.jemsit.auth_service.data.model.User;
 import info.jemsit.common.data.enums.Roles;
 import info.jemsit.common.dto.response.auth.AuthenticationResponseDTO;
+import info.jemsit.common.dto.response.auth.ProfileResponseDTO;
 import info.jemsit.common.dto.response.auth.UserDetailsResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,6 +23,13 @@ public interface AuthMapper {
     @Mapping(target = "refreshToken", source = "token.refreshToken")
     @Mapping(target = "authorities", source = "user.authorities", qualifiedByName = "mapAuthoritiesToRoles")
     AuthenticationResponseDTO toDTO(User user, Token token);
+
+    @Mapping(target = "id", source = "user.id")
+    @Mapping(target = "token", source = "token.token")
+    @Mapping(target = "refreshToken", source = "token.refreshToken")
+    @Mapping(target = "authorities", source = "user.authorities", qualifiedByName = "mapAuthoritiesToRoles")
+    @Mapping(target = "profile", source = "profile")
+    AuthenticationResponseDTO toDTOWithProfile(User user, Token token, ProfileResponseDTO profile);
 
     @Mapping(target = "roles", source = "user.authorities", qualifiedByName = "mapAuthoritiesToRoles")
     UserDetailsResponseDTO toDto(User user);

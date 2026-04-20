@@ -7,10 +7,14 @@ import info.jemsit.auth_service.data.model.Token;
 import info.jemsit.auth_service.data.model.User;
 import info.jemsit.auth_service.mapper.AuthMapper;
 import info.jemsit.auth_service.service.AuthService;
+import info.jemsit.common.UserContext;
+import info.jemsit.common.clients.auth.ProfileServiceClient;
 import info.jemsit.common.data.enums.Roles;
 import info.jemsit.common.dto.request.auth.AuthenticationRequestDTO;
+import info.jemsit.common.dto.request.auth.ProfileRequestDTO;
 import info.jemsit.common.dto.request.auth.RegisterRequestDTO;
 import info.jemsit.common.dto.response.auth.AuthenticationResponseDTO;
+import info.jemsit.common.dto.response.auth.ProfileResponseDTO;
 import info.jemsit.common.exceptions.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final TokenDAO tokenDAO;
     private final PasswordEncoder passwordEncoder;
     private final AuthMapper authMapper;
+    private final ProfileServiceClient profileServiceClient;
 
     @Transactional
     @Override
@@ -41,7 +46,9 @@ public class AuthServiceImpl implements AuthService {
         var tokenModel = crateTokenModel(user);
         user.addToken(tokenModel);
         user.setUpdatedAt(LocalDateTime.now());
-        return authMapper.toDTO(userDAO.update(user), tokenModel);
+        UserContext.setUserToken("Bearer " + tokenModel.getToken());
+        var userProfile = profileServiceClient.getProfileById(user.getProfileId());
+        return authMapper.toDTOWithProfile(userDAO.update(user), tokenModel, userProfile);
     }
 
     @Override
@@ -55,7 +62,11 @@ public class AuthServiceImpl implements AuthService {
         newUser.setPassword(passwordEncoder.encode(request.password()));
         newUser.setEmail(request.email());
         newUser.setAuthorities(List.of(Roles.CLIENT));
-        userDAO.save(newUser);
+        var savedUser = userDAO.save(newUser);
+        var resp = createProfileForUser(savedUser.getId(), null, null, null, null, null);
+        savedUser.setProfileId(resp.id());
+        userDAO.update(savedUser);
+
     }
 
     @Override
@@ -65,7 +76,10 @@ public class AuthServiceImpl implements AuthService {
         newUser.setPassword(passwordEncoder.encode(request.password()));
         newUser.setEmail(request.email());
         newUser.setAuthorities(List.of(Roles.AGENT));
-        userDAO.save(newUser);
+        var savedUser = userDAO.save(newUser);
+        var resp = createProfileForUser(savedUser.getId(), null, null, null, null, null);
+        savedUser.setProfileId(resp.id());
+        userDAO.update(savedUser);
     }
 
     @Override
@@ -75,7 +89,10 @@ public class AuthServiceImpl implements AuthService {
         newUser.setPassword(passwordEncoder.encode(request.password()));
         newUser.setEmail(request.email());
         newUser.setAuthorities(List.of(Roles.ADMIN));
-        userDAO.save(newUser);
+        var savedUser = userDAO.save(newUser);
+        var resp = createProfileForUser(savedUser.getId(), null, null, null, null, null);
+        savedUser.setProfileId(resp.id());
+        userDAO.save(savedUser);
     }
 
 
@@ -90,6 +107,8 @@ public class AuthServiceImpl implements AuthService {
             var tokenModel = crateTokenModel(savedUser);
             savedUser.addToken(tokenModel);
             savedUser.setUpdatedAt(LocalDateTime.now());
+            var resp = createProfileForUser(savedUser.getId(), null, null, null, null, null);
+            savedUser.setProfileId(resp.id());
             return authMapper.toDTO(userDAO.update(savedUser), tokenModel);
         } else {
             var tokenModel = crateTokenModel(user.get());
@@ -107,6 +126,20 @@ public class AuthServiceImpl implements AuthService {
         tokenModel.setRefreshToken(refreshToken);
         tokenModel.setUser(user);
         return tokenModel;
+    }
+
+    private ProfileResponseDTO createProfileForUser(Long userId, String phoneNumber, String firstName, String lastName, String profileImageUrl, String description) {
+        ProfileRequestDTO request = new ProfileRequestDTO(
+                null,
+                userId,
+                null,
+                phoneNumber,
+                firstName,
+                lastName,
+                profileImageUrl,
+                description
+        );
+        return profileServiceClient.createProfile(request);
     }
 
 }
