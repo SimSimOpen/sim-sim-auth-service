@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.CompletableFuture;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {

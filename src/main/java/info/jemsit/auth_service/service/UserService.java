@@ -7,4 +7,5 @@ public interface UserService {
     UserDetailsResponseDTO getUserDetails();
 
     UserDetailsResponseDTO updateUserDetails(UserDetailsRequestDTO userDetails);
+
 }

@@ -19,7 +19,6 @@ public class UserController {
 
     @PutMapping("update-user")
     public ResponseEntity<?> updateUser(@RequestBody UserDetailsRequestDTO request) {
-        userService.updateUserDetails(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(userService.updateUserDetails(request));
     }
 }
